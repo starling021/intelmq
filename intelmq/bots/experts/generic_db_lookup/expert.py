@@ -9,7 +9,11 @@ try:
     import psycopg2
     import psycopg2.extras
 except ImportError:
-    psycopg2 = None
+    try:
+        from psycopg2cffi import compat
+        compat.register()
+    except ImportError:
+        psycopg2 = None
 
 
 class GenericDBLookupExpertBot(Bot):

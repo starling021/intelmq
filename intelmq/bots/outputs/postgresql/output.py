@@ -14,7 +14,12 @@ from intelmq.lib.bot import Bot
 try:
     import psycopg2
 except ImportError:
-    psycopg2 = None
+    try:
+        from psycopg2cffi import compat
+        compat.register()
+        import psycopg2
+    except ImportError:
+        psycopg2 = None
 
 
 class PostgreSQLOutputBot(Bot):
