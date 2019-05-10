@@ -450,7 +450,6 @@ class Bot(object):
                                   "Invalid bot id, must match '"
                                   r"[^0-9a-zA-Z\-]+'."))
         self.stop()
-
     def __connect_pipelines(self):
         if self.__source_queues:
             self.logger.debug("Loading source pipeline and queue %r.", self.__source_queues)
@@ -699,10 +698,35 @@ class Bot(object):
     def run(cls):
         if len(sys.argv) < 2:
             sys.exit('No bot ID given.')
+#        instance = cls(sys.argv[1])
+#        instance.start()
 
-        instance = cls(sys.argv[1])
-        if not instance.is_multithreaded:
-            instance.start()
+        from multiprocessing import Process
+        import threading
+
+        instances = []
+        for i in range(2):
+#            instances.append(threading.Thread(target=cls, args=(sys.argv[1] + '.%d' %i, )))
+#            instances[i].start()
+#            print('Started Thread %d' % i)
+            instances.append(Process(target=cls, kwargs={'bot_id': sys.argv[1] + '.%d' %i,
+                                                         'start': True}))
+            instances[i].daemon = True
+            instances[i].start()
+            print('Started Thread %d' % i)
+            time.sleep(2)
+#        alive = len(instances)
+#        while True:
+#            for thread in instances:
+        for i, thread in enumerate(instances):
+            print(i, thread.exitcode)
+        time.sleep(1)
+
+        for i, thread in enumerate(instances):
+            print('join', i)
+#            thread.join(timeout=0.05)
+            print(thread.join(), thread.exitcode)
+
 
     def set_request_parameters(self):
         self.http_header = getattr(self.parameters, 'http_header', {})
