@@ -2,6 +2,7 @@
 """
 Modify Expert bot let's you manipulate all fields with a config file.
 """
+import cython
 import re
 import sys
 
@@ -10,6 +11,7 @@ from intelmq.lib.utils import load_configuration
 from intelmq.lib.upgrades import modify_expert_convert_config
 
 
+@cython.ccall
 def is_re_pattern(value):
     """
     Checks if the given value is a re compiled pattern
@@ -20,6 +22,7 @@ def is_re_pattern(value):
         return hasattr(value, "pattern")
 
 
+@cython.ccall
 class MatchGroupMapping:
 
     """Wrapper for a regexp match object with a dict-like interface.
@@ -57,6 +60,7 @@ class ModifyExpertBot(Bot):
                 if isinstance(expression, str) and expression != '':
                     self.config[-1]["if"][field] = re.compile(expression, **self.re_kwargs)
 
+    @cython.ccall
     def matches(self, identifier, event, condition):
         matches = {}
 
@@ -88,6 +92,7 @@ class ModifyExpertBot(Bot):
 
         return matches
 
+    @cython.ccall
     def apply_action(self, event, action, matches):
         for name, value in action.items():
             event.add(name, value.format(msg=event,
@@ -97,6 +102,7 @@ class ModifyExpertBot(Bot):
 
     def process(self):
         event = self.receive_message()
+#        print('rev', event)
 
         for rule in self.config:
             rule_id, rule_selection, rule_action = rule['rulename'], rule['if'], rule['then']
@@ -104,9 +110,9 @@ class ModifyExpertBot(Bot):
             if matches is not None:
                 self.logger.debug('Apply rule %s.', rule_id)
                 self.apply_action(event, rule_action, matches)
-
+#        print('send', event)
         self.send_message(event)
-        self.acknowledge_message()
+#        self.acknowledge_message()
 
 
 BOT = ModifyExpertBot

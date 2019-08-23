@@ -253,7 +253,7 @@ class BotTestCase(object):
                 self.input_queue = [self.default_input_message]
 
     def run_bot(self, iterations: int = 1, error_on_pipeline: bool = False,
-                prepare=True):
+                prepare=True, timeit_number=100):
         """
         Call this method for actually doing a test run for the specified bot.
 
@@ -266,9 +266,15 @@ class BotTestCase(object):
                         new=self.mocked_config):
             with mock.patch('intelmq.lib.utils.log', self.mocked_log):
                 for run in range(iterations):
+                    print('start', run)
+                    import timeit
+                    v= timeit.Timer(
+                            lambda:
                     self.bot.start(error_on_pipeline=error_on_pipeline,
                                    source_pipeline=self.pipe,
                                    destination_pipeline=self.pipe)
+                    ).timeit(timeit_number)
+                    raise ValueError(v)
         self.loglines_buffer = self.log_stream.getvalue()
         self.loglines = self.loglines_buffer.splitlines()
 
