@@ -99,8 +99,17 @@ class SieveExpertBot(Bot):
 
         # forwarding decision
         if procedure != Procedure.DROP:
-            path = getattr(event, "path", "_default")
-            self.send_message(event, path=path)
+            paths = getattr(event, "path", ("_default", ))
+            print('paths', paths)
+            if isinstance(paths, str):
+                print('is string')
+                paths = (paths, )
+            if not isinstance(paths, tuple):
+                print('is not tuple', type(paths))
+                paths = (paths.value, )
+            for path in paths:
+                print(type(path), path)
+                self.send_message(event, path=path)
 
         self.acknowledge_message()
 
