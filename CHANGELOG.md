@@ -63,6 +63,7 @@ CHANGELOG
   - Run the debian packaging tests on Python 3.5 and the codestyle test on 3.8.
 - Added tests for the new bot `intelmq.bots.outputs.misp.output_feed` (#1473).
 - Added tests for the new bot `intelmq.bots.experts.misp.expert` (#1473).
+- Call bot's static `check(parameters)` method and check for any exceptions.
 
 ### Tools
 - `intelmqctl`:

@@ -254,6 +254,13 @@ class BotTestCase(object):
             if self.default_input_message:  # None for collectors
                 self.input_queue = [self.default_input_message]
 
+    def test_static_bot_check_method(self):
+        """
+        Check if the bot's static check() method completes without errors (exceptions).
+        The return value (errors) are *not* checked.
+        """
+        self.bot_reference.check(self.sysconfig)
+
     def run_bot(self, iterations: int = 1, error_on_pipeline: bool = False,
                 prepare=True, parameters={}):
         """
